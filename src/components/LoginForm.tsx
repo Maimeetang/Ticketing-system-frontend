@@ -32,7 +32,7 @@ export default function LoginForm() {
 
       router.push("/dashboard");
     } catch (err) {
-      setError("ไม่สามารถเชื่อมต่อกับเซิร์ฟเวอร์หลังบ้านได้");
+      setError("Something went wrong. Please try again later.");
       setIsPending(false);
     }
   };

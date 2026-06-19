@@ -10,7 +10,7 @@ export default function HomePage() {
       </div>
 
       <div
-        className="hero min-h-screen"
+        className="hero min-h-screen hidden md:block"
         style={{
           backgroundImage: "url(/bg-slide1.webp)",
         }}
