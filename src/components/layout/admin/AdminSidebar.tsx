@@ -33,7 +33,7 @@ export default function AdminSidebar() {
           <li>
             <Link
               className="is-drawer-close:tooltip is-drawer-close:tooltip-right"
-              data-tip="User Management"
+              data-tip="Employee Management"
               href={"/user-management"}
             >
               <Image
@@ -43,7 +43,9 @@ export default function AdminSidebar() {
                 height={16}
                 className="my-1.5 inline-block"
               />
-              <span className="is-drawer-close:hidden">User Management</span>
+              <span className="is-drawer-close:hidden">
+                Employee Management
+              </span>
             </Link>
           </li>
         </ul>

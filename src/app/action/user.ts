@@ -2,17 +2,41 @@
 
 import { revalidatePath } from "next/cache";
 import { cookies } from "next/headers";
-import { updateUserRequestSchema } from "@/libs/validations/user";
 import {
-  ApiErrorResponse,
-  apiErrorResponseSchema,
+  updateUserRequestSchema,
+  userResponseSchema,
+} from "@/libs/validations/user";
+import {
   apiMessageOnlySchema,
-  ApiSuccess,
+  ApiResponse,
+  apiSuccessResponseSchema,
 } from "@/libs/validations/response";
+import z from "zod";
+import { handleApiResponse } from "@/libs/api-handler";
+
+type UserListType = z.infer<typeof userResponseSchema>[];
+
+export async function ListUsersAction(): Promise<ApiResponse<UserListType>> {
+  const cookieStore = await cookies();
+  const allCookies = cookieStore.toString();
+
+  try {
+    const res = await fetch(`${process.env.API_BASE_URL}/users/`, {
+      headers: { Cookie: allCookies },
+    });
+
+    return (await handleApiResponse({
+      response: res,
+      successSchema: apiSuccessResponseSchema(z.array(userResponseSchema)),
+    })) as ApiResponse<UserListType>;
+  } catch {
+    return { status: "error", message: "Network connection error" };
+  }
+}
 
 export async function updateUserAction(
   formData: FormData,
-): Promise<ApiSuccess<unknown> | ApiErrorResponse> {
+): Promise<ApiResponse<unknown>> {
   const cookieStore = await cookies();
   const allCookies = cookieStore.toString();
 
@@ -45,33 +69,16 @@ export async function updateUserAction(
       body: JSON.stringify(valid),
     });
 
-    if (!res.ok) {
-      const json = (await res.json().catch(() => ({}))) as unknown;
-      const parsedError = apiErrorResponseSchema.safeParse(json);
+    const result = await handleApiResponse({
+      response: res,
+      successSchema: apiMessageOnlySchema,
+    });
 
-      if (parsedError.success) {
-        return parsedError.data;
-      } else {
-        return {
-          status: "error",
-          message: `Server returned an invalid error response format (Status: ${res.status})`,
-        };
-      }
+    if (result.status === "success") {
+      revalidatePath("/user-management", "layout");
     }
-
-    const json = await res.json();
-    const parsedRes = apiMessageOnlySchema.safeParse(json);
-
-    if (!parsedRes.success) {
-      return {
-        status: "error",
-        message: "API succeeded, but returned an invalid success data format.",
-      };
-    }
-
-    revalidatePath("/user-management");
-    return parsedRes.data;
-  } catch (error) {
+    return result as ApiResponse<UserListType>;
+  } catch {
     return { status: "error", message: "Network connection error" };
   }
 }

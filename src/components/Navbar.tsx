@@ -4,7 +4,7 @@ import { usePathname } from "next/navigation";
 
 const PATH_TITLES: Record<string, string> = {
   "/dashboard": "Dashboard",
-  "/user-management": "User Management",
+  "/user-management": "Employee Management",
 };
 
 export default function Navbar() {
