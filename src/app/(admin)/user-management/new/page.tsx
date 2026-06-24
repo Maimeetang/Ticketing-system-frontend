@@ -1,4 +1,5 @@
 import UserManagementBackButton from "@/components/layout/admin/UserBackButton";
+import NewEmployeeForm from "@/components/layout/admin/NewEmployeeForm";
 
 export default function NewEmployee() {
   return (
@@ -7,9 +8,10 @@ export default function NewEmployee() {
         <UserManagementBackButton />
       </div>
       <div className="p-8 bg-base-100 rounded-box shadow-md">
-        <div className="flex items-center justify-center text-center text-gray-500">
-          create new employee
-        </div>
+        <h1 className="text-lg font-semibold mb-6 text-center">
+          Add new employee
+        </h1>
+        <NewEmployeeForm />
       </div>
     </div>
   );

@@ -1,5 +1,7 @@
+import { GetUserByIdAction } from "@/app/action/user";
 import UserManagementBackButton from "@/components/layout/admin/UserBackButton";
-// import { GetUserByIdAction } from "@/app/action/user";
+import UserDetailForm from "@/components/layout/admin/UserDetailForm";
+import UserFetchError from "@/components/layout/admin/UserFetchError";
 
 export default async function UserDetailPage({
   params,
@@ -7,6 +9,7 @@ export default async function UserDetailPage({
   params: Promise<{ id: string }>;
 }) {
   const { id } = await params;
+  const result = await GetUserByIdAction(id);
 
   return (
     <div data-has-child="true">
@@ -14,9 +17,11 @@ export default async function UserDetailPage({
         <UserManagementBackButton />
       </div>
       <div className="p-8 bg-base-100 rounded-box shadow-md">
-        <div className="flex items-center justify-center text-center text-gray-500">
-          show user details user id: {id}
-        </div>
+        {result.status === "error" ? (
+          <UserFetchError message={result.message} />
+        ) : (
+          <UserDetailForm user={result.data!} />
+        )}
       </div>
     </div>
   );
